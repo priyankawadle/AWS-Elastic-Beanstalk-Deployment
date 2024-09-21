@@ -19,7 +19,7 @@ con.connect(function(err) {
     console.log('Connected');  
 });
 
-app.get('/', (req, res) => {
+app.get('/start', (req, res) => {
 
     res.send('Hello World!');
 });
