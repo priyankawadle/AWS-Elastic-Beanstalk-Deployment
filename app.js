@@ -19,6 +19,10 @@ con.connect(function(err) {
     console.log('Connected');  
 });
 
+app.get('/', (req, res) => {
+
+    res.send('Hello World!');
+});
 app.get('/api/items', (req, res) => {
     const query='select * from customers';
     con.query(query,(err,result)=>{
