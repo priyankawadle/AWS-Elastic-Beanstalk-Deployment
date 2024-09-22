@@ -26,4 +26,14 @@ app.get('/start', (req, res) => {
     res.send('Hello World!');
 });
 
+app.get('/api/items', (req, res) => {
+    const query='select * from customers';
+    con.query(query,(err,result)=>{
+        if(err) throw err;
+        console.log(result);
+        res.send({status:200,data:result});
+    })
+});
+
+
 app.listen(process.env.PORT, () => console.log(`http://localhost:${process.env.PORT} app listening on port ${process.env.PORT}!`));
