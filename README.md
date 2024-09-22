@@ -1,64 +1,29 @@
-const express=require('express');
-const mysql=require('mysql');
-const bodyParser=require('body-parser');
-require('dotenv').config();
-const app = express();
-app.use(bodyParser.json());
-app.get('/start', (req, res) => {
 
-    res.send('Hello World!');
-});
+Here’s deployment steps for a Node.js app on AWS Elastic Beanstalk and CodePipeline:
 
-const con = mysql.createConnection({
-    host: process.env.HOST,
-    user: process.env.USER,
-    password: process.env.PASSWORD,
-    database: process.env.DATABASE,
-    port:process.env.MYSQLPORT
-});
+1. **Create an RDS instance**:
+   - Launch an Amazon RDS instance (e.g., MySQL/PostgreSQL).
+   - Configure the security group to allow inbound traffic from your application.
+   - Connect to the RDS instance using a MySQL/SQL workbench or any other database client.
+   - Create a database and necessary tables, then insert initial data if required.
 
-con.connect(function(err) {
-    if(err) throw err;
-    console.log('Connected');  
-});
+2. **Develop Node.js APIs**:
+   - Create a Node.js application with RESTful APIs to perform CRUD operations using the RDS database.
+   - Ensure the app uses environment variables for database connection credentials (e.g., `DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`).
 
+3. **Create an Elastic Beanstalk Application and Environment**:
+   - In AWS Elastic Beanstalk, create an application and configure the environment for Node.js.
+   - Ensure your Node.js app listens on `process.env.PORT` (default to `8080`) to handle the port correctly.
+   - If your app uses a custom port, ensure Elastic Beanstalk is configured to route traffic to the correct port.
 
-app.get('/api/items', (req, res) => {
-    const query='select * from customers';
-    con.query(query,(err,result)=>{
-        if(err) throw err;
-        console.log(result);
-        res.send({status:200,data:result});
-    })
-});
+4. **Security Group Configuration**:
+   - Allow inbound HTTP/HTTPS traffic (typically on port 80/443) for the security group associated with the EC2 instances in the Elastic Beanstalk environment.
 
-app.post('/api/items', (req, res) => {
-    const body=req.body;
-    const query='insert into customers (name,email) values ("'+body.name+'","'+body.email+'")';
-    con.query(query,(err,result)=>{
-        if(err) throw err;
-        console.log(result);
-        res.send({status:200,data:result});
-    })
-});
+5. **Configure Environment Variables**:
+   - Add necessary environment variables (e.g., database connection details, API keys) via the Elastic Beanstalk environment settings.
 
-app.put('/api/items/:id', (req, res) => {
-    const body=req.body;
-    const query='update customers set name="'+body.name+'",email="'+body.email+'" where id="'+req.params.id+'"';
-    con.query(query,(err,result)=>{
-        if(err) throw err;
-        console.log(result);
-        res.send({status:200,data:result});
-    })
-});
-
-app.delete('/api/items/:id', (req, res) => {
-    const query='delete from customers where id="'+req.params.id+'"';
-    con.query(query,(err,result)=>{
-        if(err) throw err;
-        console.log(result);
-        res.send({status:200,data:result});
-    })
-});
-
-app.listen(process.env.PORT, () => console.log(`http://localhost:${process.env.PORT} app listening on port ${process.env.PORT}!`));
+6. **Set up AWS CodePipeline**:
+   - Create a CodePipeline in AWS.
+   - For the source stage, select your GitHub repository where the Node.js app is hosted.
+   - For the build stage (if needed), use AWS CodeBuild or configure the pipeline to skip this step if the app doesn’t require a build process.
+   - For the deploy stage, select AWS Elastic Beanstalk as the deployment target.
