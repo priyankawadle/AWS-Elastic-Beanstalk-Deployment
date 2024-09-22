@@ -4,7 +4,10 @@ const bodyParser=require('body-parser');
 require('dotenv').config();
 const app = express();
 app.use(bodyParser.json());
-console.log(process.env.HOST);
+app.get('/start', (req, res) => {
+
+    res.send('Hello World!');
+});
 
 const con = mysql.createConnection({
     host: process.env.HOST,
@@ -19,10 +22,7 @@ con.connect(function(err) {
     console.log('Connected');  
 });
 
-app.get('/start', (req, res) => {
 
-    res.send('Hello World!');
-});
 app.get('/api/items', (req, res) => {
     const query='select * from customers';
     con.query(query,(err,result)=>{
